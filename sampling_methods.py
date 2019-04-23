@@ -43,6 +43,7 @@ ax[1].legend()
 ax[1].set_xlabel(r"$x$")
 ax[1].set_ylabel(r"$y$")
 ax[1].set_ylim(0.0, 1.5)
+plt.savefig("images/stochastic_approximations/pit.png")
 plt.show()
 
 # Rejection Sampling

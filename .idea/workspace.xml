@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="20dd4b11-a2a5-40eb-9a82-a4af4bcd8785" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/sampling_methods.py" beforeDir="false" afterPath="$PROJECT_DIR$/sampling_methods.py" afterDir="false" />
-    </list>
+    <list default="true" id="20dd4b11-a2a5-40eb-9a82-a4af4bcd8785" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +26,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="830" />
-          <entry key="Python" value="926" />
+          <entry key="Python" value="1004" />
         </counts>
       </usages-collector>
     </session>
@@ -50,8 +48,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sampling_methods.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1088">
-              <caret line="64" column="58" selection-start-line="64" selection-start-column="58" selection-end-line="64" selection-end-column="58" />
+            <state relative-caret-position="136">
+              <caret line="14" column="16" lean-forward="true" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
               <folding>
                 <element signature="e#28#46#0" expanded="true" />
               </folding>
@@ -204,8 +202,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sampling_methods.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1088">
-          <caret line="64" column="58" selection-start-line="64" selection-start-column="58" selection-end-line="64" selection-end-column="58" />
+        <state relative-caret-position="136">
+          <caret line="14" column="16" lean-forward="true" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
           <folding>
             <element signature="e#28#46#0" expanded="true" />
           </folding>
