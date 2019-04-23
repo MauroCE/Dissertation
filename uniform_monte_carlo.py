@@ -27,7 +27,6 @@ def approx_norm_const(N_list, f=f, t=t):
     for N in N_list:
         # dictionary to store everything
         results = {'u': u[:N]}
-        # WE PROBABLY NEED TO MULTIPLY BY SIZE OF THE INTERVAL THAT WE are sampling from
         size_interval = t - f
         # evaluate samples with unnormalized normal
         results['unnormalized'] = normal_unnormalized(results['u'])
@@ -58,7 +57,6 @@ for index, res in enumerate(results):
     ax.plot(res['sorted_samples'], res['sorted_evaluations'],
             lw=1, alpha=1, color=color2, ls=line_styles[index])
     labels.append('# Samples={}, Normalization Constant'.format(res['N']) + r'$\approx$'+'{:.3}'.format(res['norm_const']))
-
 
 
 lines = ax.get_lines()
