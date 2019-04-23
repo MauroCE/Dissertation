@@ -47,7 +47,7 @@ plt.savefig("images/stochastic_approximations/pit.png")
 plt.show()
 
 # Rejection Sampling
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(10, 8))
 fs = 7
 x = np.linspace(0, np.pi, 200)
 cf = norm(loc=np.pi/2, scale=0.4)
@@ -74,4 +74,5 @@ ax.scatter(cf_samples[accepted], uniform_samples[accepted], s=7, color=orange,
 ax.scatter(cf_samples[~accepted], uniform_samples[~accepted], s=7, color=blue,
            zorder=20, label='Rejected Samples', edgecolors='k', linewidth=0.2)
 ax.legend()
+plt.savefig("images/stochastic_approximations/rejection_sampling.png")
 plt.show()
