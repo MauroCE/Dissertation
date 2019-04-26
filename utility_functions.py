@@ -95,5 +95,50 @@ def surface_plot(func, xleft, xright, yleft, yright, num):
     return B1, B2, Zbeta
 
 
+def metropolis(p, scale, z0=None, n_samples=100, burn_in=0, thinning=1, log=False):
+    """
+    Metropolis algorithm used to sample from a multivariate probability distribution.
+    """
+    z = z0 if z0 is not None else np.random.uniform()
+    pz = p(z)
+    # calculate total number of calculations
+    tot = burn_in + (n_samples - 1) * thinning + 1
+    # store the number of accepted samples to see acceptance rate
+    accepted = 0
+    # stores all the samples
+    sample_list = np.zeros(tot)
+    # Generate uniform random numbers outside the loop
+    u = np.random.uniform(size=tot)
+    # if covariance matrix is not provided, use default ones?
+    normal_shift = norm.rvs(loc=0, scale=scale, size=tot)
+
+    for i in range(tot):
+        # Sample a candidate from Normal(mu, sigma)
+        cand = z + normal_shift[i]
+        # Acceptance probability
+        try:
+            p_cand = p(cand)
+            if log:
+                prob = min(0, p_cand - pz)
+            else:
+                prob = min(1, p_cand / pz)  # Notice this is different from min(1, pcand / pz) as we are in logarithmic scale
+        except (OverflowError, ValueError, RuntimeWarning):
+            continue
+        if log:
+            condition = prob > np.log(u[i])
+        else:
+            condition = prob > u[i]
+        if condition:  # Notice that this is log(u) because we are in logarithmic scale
+            z = cand
+            pz = p_cand  # to save computations
+            accepted += 1
+
+        sample_list[i] = z
+
+    # Finally want to take every Mth sample in order to achieve independence
+    print("Acceptance rate: ", accepted / tot)
+    return sample_list[burn_in::thinning]
+
+
 if __name__ == "__main__":
     pass
