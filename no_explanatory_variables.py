@@ -62,16 +62,16 @@ class NoExplanatoryVariables:
 
     def _variational_em(self):
         """Internal function to find mean and variance for variational em."""
-        xi_list = np.random.uniform(low=1, high=2, size=n)  # try 0, 1?
+        xi_list = np.random.uniform(low=1, high=2, size=self.n)  # try 0, 1?
         # number of EM iterations
         for i in range(10):
             for xi_index in range(len(xi_list)):
-                # sigma2 = 1 / (2*np.sum(lambda_func(xi_list)))
-                sigma2 = 1 / (2 * np.array(
-                    [lambda_func(i) for i in xi_list]).sum())
-                mean = sigma2 * self.n * (self.ybar - 0.5)
-                # xi_list[xi_index] = sigma2 + mean ** 2
-                xi_list[xi_index] = np.sqrt(sigma2 + mean ** 2)
+                xi_list[xi_index] = np.sqrt(
+                    (1.0 + self.sum - 0.5*self.n)/(2.0*np.sum(lambda_func(xi_list)))
+                )
+        # once parameters have been optimized, use them to find mean and var
+        sigma2 = 1.0 / (2.0*np.sum(lambda_func(xi_list)))
+        mean = sigma2*self.n*(self.ybar - 0.5)
         return mean, sigma2
 
     def variational(self, t):
@@ -103,26 +103,43 @@ class NoExplanatoryVariables:
             var_mean, var_sigma2 = self._variational_em()
             var_means.append(var_mean)
             var_scales.append(np.sqrt(var_sigma2))
-
+        var_means = np.array(var_means)
+        var_scales = np.array(var_scales)
+        lap_means = np.array(lap_means)
+        lap_scales = np.array(lap_scales)
         # Make colormaps prettier
         blue_cmap = ListedColormap(cm.Blues(np.linspace(0, 1, 20))[10:, :-1])
         oran_cmap = ListedColormap(cm.Oranges(np.linspace(0, 1, 20))[10:, :-1])
 
-        fig, ax = plt.subplots(nrows=1, ncols=2)
-        # Variational
+        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 10))
+        fig.suptitle("Comparing Parameters of Laplace and Variational"
+                     " Normal Approximations", fontsize=20)
+        # Variational, Laplace sigma
         ax[0].scatter(var_means, var_scales,
                    c=n_list, cmap=oran_cmap)
         ax[0].plot(var_means, var_scales, c='orange', label='variational')
+        ax[0].scatter(lap_means, lap_scales,
+                   c=n_list, cmap=blue_cmap)
+        ax[0].plot(lap_means, lap_scales, c='blue', label='laplace')
         ax[0].legend()
         ax[0].set_xlabel(r'$\mu$')
         ax[0].set_ylabel(r'$\sigma$')
-        # Laplace
-        ax[1].scatter(lap_means, lap_scales,
-                   c=n_list, cmap=blue_cmap)
-        ax[1].plot(lap_means, lap_scales, c='blue', label='laplace')
+        # Difference in mean, difference in scales
+        ax[1].scatter(var_means - lap_means, var_scales - lap_scales,
+                   c=n_list, cmap=oran_cmap)
+        ax[1].plot(var_means - lap_means, var_scales - lap_scales,
+                   c='orange', label='Variational - Laplace')
         ax[1].legend()
-        ax[1].set_xlabel(r'$\mu$')
-        ax[1].set_ylabel(r'$\sigma$')
+        ax[1].set_xlabel(r'$\mu_V - \mu_L$')
+        ax[1].set_ylabel(r'$\sigma_V - \sigma_L$')
+        # First plot annotations
+        for i, txt in enumerate(n_list):
+            ax[0].annotate(txt, (var_means[i], var_scales[i]))
+            ax[0].annotate(txt, (lap_means[i], lap_scales[i]))
+            ax[1].annotate(txt, (var_means[i] - lap_means[i],
+                                 var_scales[i] - lap_scales[i]))
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.95)
         plt.show()
 
 
@@ -155,5 +172,5 @@ if __name__ == "__main__":
     ax[1].axvline(model.true_log_mode, alpha=0.5, ls=':', label='log mode')
     ax[1].legend()
     plt.show()
-
-    model.compare_approximations(50, 500, 50)
+    # Compare mean and scale of Laplace and Variational normal approximations
+    model.compare_approximations(1000, 10000, 1000)
