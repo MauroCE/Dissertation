@@ -4,9 +4,11 @@
       <w>darkgrid</w>
       <w>figsize</w>
       <w>fontset</w>
+      <w>logit</w>
       <w>mathtext</w>
       <w>mcmc</w>
       <w>stix</w>
+      <w>ybar</w>
     </words>
   </dictionary>
 </component>
