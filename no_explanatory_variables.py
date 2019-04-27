@@ -1,4 +1,5 @@
-from utility_functions import sigmoid, logit, log_normal_kernel, lambda_func
+from utility_functions import sigmoid, logit, log_normal_kernel, lambda_func,\
+    blue_cmap, oran_cmap
 from scipy.stats import norm
 from scipy.special import beta
 import numpy as np
@@ -108,9 +109,6 @@ class NoExplanatoryVariables:
         lap_means = np.array(lap_means)
         lap_scales = np.array(lap_scales)
         # Make colormaps prettier
-        blue_cmap = ListedColormap(cm.Blues(np.linspace(0, 1, 20))[10:, :-1])
-        oran_cmap = ListedColormap(cm.Oranges(np.linspace(0, 1, 20))[10:, :-1])
-
         fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 10))
         fig.suptitle("Comparing Parameters of Laplace and Variational"
                      " Normal Approximations", fontsize=20)
