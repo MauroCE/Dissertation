@@ -2,7 +2,14 @@ import numpy as np
 from numpy.random import binomial
 from scipy.stats import multivariate_normal
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import math
+from matplotlib.colors import ListedColormap
 from mpl_toolkits.mplot3d import Axes3D
+
+blue_cmap = ListedColormap(cm.Blues(np.linspace(0, 1, 20))[10:, :-1])
+oran_cmap = ListedColormap(cm.Oranges(np.linspace(0, 1, 20))[10:, :-1])
+green_cmap = ListedColormap(cm.Greens(np.linspace(0, 1, 20))[10:, :-1])
 
 
 def sigmoid(x):
@@ -141,6 +148,42 @@ def metropolis_multivariate(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
         sample_list[i, :] = z
     return sample_list[burn_in::thinning], accepted / tot
 
+
+def choose_subplot_dimensions(k):
+    if k < 4:
+        return k, 1
+    elif k < 11:
+        return math.ceil(k/2), 2
+    else:
+        # I've chosen to have a maximum of 3 columns
+        return math.ceil(k/3), 3
+
+
+def generate_subplots(k, row_wise=False, suptitle=None, fontsize=20):
+    nrows, ncols = choose_subplot_dimensions(k)
+    # Choose your share X and share Y parameters as you wish:
+    figure, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(13, 5*nrows))
+    figure.suptitle(suptitle, fontsize=fontsize)
+
+    # Check if it's an array. If there's only one plot, it's just an Axes obj
+    if not isinstance(axes, np.ndarray):
+        return figure, [axes]
+    else:
+        # Choose the traversal you'd like: 'F' is col-wise, 'C' is row-wise
+        axes = axes.flatten(order=('C' if row_wise else 'F'))
+
+        # Delete any unused axes from the figure, so that they don't show
+        # blank x- and y-axis lines
+        for idx, ax in enumerate(axes[k:]):
+            figure.delaxes(ax)
+
+            # Turn ticks on for the last ax in each column, wherever it lands
+            idx_to_turn_on_ticks = idx + k - ncols if row_wise else idx + k - 1
+            for tk in axes[idx_to_turn_on_ticks].get_xticklabels():
+                tk.set_visible(True)
+
+        axes = axes[:k]
+        return figure, axes
 
 
 def metropolis(p, scale, z0=None, n_samples=100, burn_in=0, thinning=1, log=False):
