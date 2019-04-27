@@ -62,7 +62,7 @@ class NoExplanatoryVariables:
 
     def _variational_em(self):
         """Internal function to find mean and variance for variational em."""
-        xi_list = np.random.uniform(low=1, high=2, size=self.n)  # try 0, 1?
+        xi_list = np.random.uniform(size=self.n)  # try 0, 1? Low1, High2
         # number of EM iterations
         for i in range(10):
             for xi_index in range(len(xi_list)):
@@ -121,9 +121,11 @@ class NoExplanatoryVariables:
         ax[0].scatter(lap_means, lap_scales,
                    c=n_list, cmap=blue_cmap)
         ax[0].plot(lap_means, lap_scales, c='blue', label='laplace')
-        ax[0].legend()
         ax[0].set_xlabel(r'$\mu$')
         ax[0].set_ylabel(r'$\sigma$')
+        ax[0].axvline(theta, alpha=0.5,
+                      label='True ' + r'$\theta$', ls=':')
+        ax[0].legend()
         # Difference in mean, difference in scales
         ax[1].scatter(var_means - lap_means, var_scales - lap_scales,
                    c=n_list, cmap=oran_cmap)
@@ -140,6 +142,7 @@ class NoExplanatoryVariables:
                                  var_scales[i] - lap_scales[i]))
         plt.tight_layout()
         plt.subplots_adjust(top=0.95)
+        plt.savefig("images/comparing_no_exp_approximations.png")
         plt.show()
 
 
@@ -171,6 +174,7 @@ if __name__ == "__main__":
     ax[1].set_title('Log Posterior Scale')
     ax[1].axvline(model.true_log_mode, alpha=0.5, ls=':', label='log mode')
     ax[1].legend()
+    plt.savefig("images/no_explanatory.png")
     plt.show()
     # Compare mean and scale of Laplace and Variational normal approximations
     model.compare_approximations(1000, 10000, 1000)
