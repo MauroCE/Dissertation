@@ -1,14 +1,24 @@
 <component name="ProjectDictionaryState">
   <dictionary name="Mauro">
     <words>
+      <w>cand</w>
       <w>darkgrid</w>
+      <w>edgecolors</w>
+      <w>facecolors</w>
       <w>figsize</w>
       <w>fontset</w>
+      <w>kdes</w>
       <w>logit</w>
+      <w>logu</w>
       <w>mathtext</w>
       <w>mcmc</w>
       <w>stix</w>
+      <w>timeseries</w>
+      <w>vcov</w>
+      <w>xlabel</w>
       <w>ybar</w>
+      <w>ylabel</w>
+      <w>zlabel</w>
     </words>
   </dictionary>
 </component>
