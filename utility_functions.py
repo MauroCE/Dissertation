@@ -1,15 +1,27 @@
 import numpy as np
 from numpy.random import binomial
-from scipy.stats import multivariate_normal
+from scipy.stats import multivariate_normal, norm
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import math
+import seaborn as sns
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.mplot3d import Axes3D
 
 blue_cmap = ListedColormap(cm.Blues(np.linspace(0, 1, 20))[10:, :-1])
 oran_cmap = ListedColormap(cm.Oranges(np.linspace(0, 1, 20))[10:, :-1])
 green_cmap = ListedColormap(cm.Greens(np.linspace(0, 1, 20))[10:, :-1])
+
+
+def setup_plotting():
+    """This function sets up Latex-like fonts, font sizes and other
+    parameter to make plots look prettier."""
+    sns.set_style('darkgrid')
+    plt.rcParams['mathtext.fontset'] = 'stix'
+    plt.rcParams['font.family'] = 'STIXGeneral'
+    plt.rcParams['font.size'] = 14
+    plt.rcParams['figure.figsize'] = (12, 6)
+    plt.rc('figure', titlesize=16)
 
 
 def sigmoid(x):
@@ -102,7 +114,26 @@ def row_outer(A):
     return np.einsum('ni,nj->nij', A, A)
 
 
-def metropolis_multivariate(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
+def round_matrix_to_symmetry(x, max_digits=7):
+    """This function takes a matrix and tries to keep the largest number of
+    digits such that the matrix is symmetric. This is useful when using the
+    inverse hessian matrix coming from the minimization routine used
+    to find the mode of the log-posterior. The inverse hessian matrix of
+    -log_posterior will be used as variance-covariance matrix of proposal
+    distribution."""
+    q_max = 1
+    # Allow only up to 6 digits. This should be more than enough for a vcov.
+    for q in range(1, max_digits):
+        # Round the matrix
+        rounded = x.round(q)
+        # Check for symmetry
+        if np.allclose(rounded, rounded.T, rtol=1e-10, atol=1e-10):
+            q_max = q
+    return x.round(q_max), q_max
+
+
+def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1,
+               a=1):
     """
     Random-Walk Metropolis algorithm for a multivariate probability density.
 
@@ -121,18 +152,23 @@ def metropolis_multivariate(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
     :param thinning: If `thinning` > 1 then after applying burn_in we get
                      every <<thinning>> samples.
     :type thinning: int
+    :param a: Coefficient used to multiply vcov.
+    :type a: float
     :return: `n_samples` samples from `p`.
     :rtype: np.array
     """
     # Initialize algorithm. Calculate num iterations. Acceptance counter.
-    z, n_params, pz = z0, len(z0), p(z0)
+    z, n_params, pz = z0.copy(), len(z0), p(z0)
     tot = burn_in + (n_samples - 1) * thinning + 1
     accepted = 0
     # Init list storing all samples. Generate random numbers.
     sample_list = np.zeros((tot, n_params))
     logu = np.log(np.random.uniform(size=tot))
-    normal_shift = multivariate_normal.rvs(mean=np.zeros(n_params),
-                                           cov=cov, size=tot)
+    if n_params >= 2:
+        normal_shift = multivariate_normal.rvs(mean=np.zeros(n_params),
+                                               cov=a*cov, size=tot)
+    else:
+        normal_shift = norm.rvs(loc=0, scale=np.sqrt(cov), size=tot)
     for i in range(tot):
         # Sample a candidate from Normal(mu, sigma)
         cand = z + normal_shift[i]
@@ -141,15 +177,17 @@ def metropolis_multivariate(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
             # Store values to save computations. logu[i] <= 0 for u \in (0, 1)
             p_cand = p(cand)
             if p_cand - pz > logu[i]:
-                z, pz, accepted = cand, p_cand, accepted + 1
+                z, pz, accepted = cand.copy(), p_cand, accepted + 1
         except (OverflowError, ValueError, RuntimeWarning):
             continue
 
-        sample_list[i, :] = z
+        sample_list[i, :] = z.copy()
     return sample_list[burn_in::thinning], accepted / tot
 
 
 def choose_subplot_dimensions(k):
+    """This function will determine the number or rows and columns of a
+    subplot based on the number of parameters that we want to plot."""
     if k < 4:
         return k, 1
     elif k < 11:
@@ -160,6 +198,8 @@ def choose_subplot_dimensions(k):
 
 
 def generate_subplots(k, row_wise=False, suptitle=None, fontsize=20):
+    """This function generates subplots in the dimension specified by
+    choose_subplot_dimensions(). """
     nrows, ncols = choose_subplot_dimensions(k)
     # Choose your share X and share Y parameters as you wish:
     figure, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(13, 5*nrows))
@@ -184,51 +224,6 @@ def generate_subplots(k, row_wise=False, suptitle=None, fontsize=20):
 
         axes = axes[:k]
         return figure, axes
-
-
-def metropolis(p, scale, z0=None, n_samples=100, burn_in=0, thinning=1, log=False):
-    """
-    Metropolis algorithm used to sample from a multivariate probability distribution.
-    """
-    z = z0 if z0 is not None else np.random.uniform()
-    pz = p(z)
-    # calculate total number of calculations
-    tot = burn_in + (n_samples - 1) * thinning + 1
-    # store the number of accepted samples to see acceptance rate
-    accepted = 0
-    # stores all the samples
-    sample_list = np.zeros(tot)
-    # Generate uniform random numbers outside the loop
-    u = np.random.uniform(size=tot)
-    # if covariance matrix is not provided, use default ones?
-    normal_shift = norm.rvs(loc=0, scale=scale, size=tot)
-
-    for i in range(tot):
-        # Sample a candidate from Normal(mu, sigma)
-        cand = z + normal_shift[i]
-        # Acceptance probability
-        try:
-            p_cand = p(cand)
-            if log:
-                prob = min(0, p_cand - pz)
-            else:
-                prob = min(1, p_cand / pz)  # Notice this is different from min(1, pcand / pz) as we are in logarithmic scale
-        except (OverflowError, ValueError, RuntimeWarning):
-            continue
-        if log:
-            condition = prob > np.log(u[i])
-        else:
-            condition = prob > u[i]
-        if condition:  # Notice that this is log(u) because we are in logarithmic scale
-            z = cand
-            pz = p_cand  # to save computations
-            accepted += 1
-
-        sample_list[i] = z
-
-    # Finally want to take every Mth sample in order to achieve independence
-    print("Acceptance rate: ", accepted / tot)
-    return sample_list[burn_in::thinning]
 
 
 if __name__ == "__main__":
