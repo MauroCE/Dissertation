@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="20dd4b11-a2a5-40eb-9a82-a4af4bcd8785" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/images/no_explanatory/comparing_no_exp_approximations.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/no_explanatory/no_explanatory.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/Mauro.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/Mauro.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/explanatory_variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/explanatory_variables.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/comparing_no_exp_approximations.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/no_explanatory.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_explanatory_variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/no_explanatory_variables.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utility_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/utility_functions.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,7 +23,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="IPNB" value="1" />
-          <entry key="Image" value="6" />
+          <entry key="Image" value="10" />
           <entry key="Markdown" value="1" />
           <entry key="Python" value="14" />
         </counts>
@@ -37,7 +32,7 @@
         <counts>
           <entry key="Markdown" value="991" />
           <entry key="PLAIN_TEXT" value="8" />
-          <entry key="Python" value="36145" />
+          <entry key="Python" value="37259" />
         </counts>
       </usages-collector>
     </session>
@@ -62,8 +57,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utility_functions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="171" column="24" lean-forward="true" selection-start-line="171" selection-start-column="24" selection-end-line="171" selection-end-column="24" />
+            <state relative-caret-position="1785">
+              <caret line="105" column="53" selection-start-line="105" selection-start-column="53" selection-end-line="105" selection-end-column="53" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -86,8 +81,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/explanatory_variables.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="270" column="45" lean-forward="true" selection-start-line="270" selection-start-column="45" selection-end-line="270" selection-end-column="45" />
+            <state relative-caret-position="95">
+              <caret line="302" lean-forward="true" selection-start-line="302" selection-end-line="302" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -129,8 +124,8 @@
         <option value="$PROJECT_DIR$/true_posterior.py" />
         <option value="$PROJECT_DIR$/likelihood.py" />
         <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/utility_functions.py" />
         <option value="$PROJECT_DIR$/no_explanatory_variables.py" />
+        <option value="$PROJECT_DIR$/utility_functions.py" />
         <option value="$PROJECT_DIR$/explanatory_variables.py" />
       </list>
     </option>
@@ -157,6 +152,12 @@
               <item name="Dissertation" type="462c0819:PsiDirectoryNode" />
               <item name="images" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="Dissertation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Dissertation" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
+              <item name="explanatory" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -166,6 +167,11 @@
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Users\Mauro\Documents\Main\Programming\Projects\Dissertation\images\no_explanatory" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -329,7 +335,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" sideWeight="0.502" side_tool="true" weight="0.24983476" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.498" weight="0.24983476" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.498" visible="true" weight="0.24983476" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" show_stripe_button="false" />
       <window_info anchor="bottom" id="Python Console" weight="0.38389263" />
@@ -337,7 +343,7 @@
       <window_info anchor="bottom" id="Event Log" sideWeight="0.50033045" side_tool="true" weight="0.32885906" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32885906" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49966952" weight="0.32885906" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49966952" visible="true" weight="0.32885906" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -491,16 +497,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utility_functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="171" column="24" lean-forward="true" selection-start-line="171" selection-start-column="24" selection-end-line="171" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/no_explanatory_variables.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="231">
@@ -511,10 +507,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/utility_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1785">
+          <caret line="105" column="53" selection-start-line="105" selection-start-column="53" selection-end-line="105" selection-end-column="53" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/images/explanatory/n_50_p_8_s_300000/mcmc_timeseries.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/images/explanatory/n_500_p_8_s_300000/mcmc_timeseries.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/images/explanatory/n_500_p_8_s_300000/mcmc_autocorr.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/images/explanatory/n_500_p_8_s_300000/mcmc_hist.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/explanatory_variables.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="270" column="45" lean-forward="true" selection-start-line="270" selection-start-column="45" selection-end-line="270" selection-end-column="45" />
+        <state relative-caret-position="95">
+          <caret line="302" lean-forward="true" selection-start-line="302" selection-end-line="302" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

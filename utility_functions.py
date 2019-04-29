@@ -4,6 +4,8 @@ from scipy.stats import multivariate_normal, norm
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import math
+import os
+import errno
 import seaborn as sns
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.mplot3d import Axes3D
@@ -22,6 +24,17 @@ def setup_plotting():
     plt.rcParams['font.size'] = 14
     plt.rcParams['figure.figsize'] = (12, 6)
     plt.rc('figure', titlesize=16)
+
+
+def mkdir_p(path):
+    """Creates a directory in the specified path."""
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 
 def sigmoid(x):
@@ -85,8 +98,9 @@ def generate_bernoulli(size, params):
 
 def surface_plot(f, xmin, xmax, ymin, ymax, n):
     """
-    Given a R2 -> R function "func" which takes an array of dimension 2 and returns a scalar,
-    this function will plot a surface plot over the specified region.
+    Given a R2 -> R function "func" which takes an array of dimension 2 and
+    returns a scalar, this function will plot a surface plot over the
+    specified region.
     """
     # Get grid data
     x, y, z = prepare_surface_plot(f, xmin, xmax, ymin, ymax, n)

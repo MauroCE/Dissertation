@@ -5,7 +5,7 @@ from scipy.optimize import minimize
 from scipy.stats import gaussian_kde, multivariate_normal, norm
 from utility_functions import generate_bernoulli, \
     log_normal_kernel, metropolis, sigmoid, lambda_func, \
-    row_outer, prepare_surface_plot, generate_subplots, setup_plotting
+    row_outer, prepare_surface_plot, generate_subplots, setup_plotting, mkdir_p
 
 
 setup_plotting()
@@ -46,6 +46,22 @@ class ExplanatoryVariables:
         )
         # return mode and inverse hessian
         return result.x, result.hess_inv
+
+    def save_image(self, image_name):
+        """Creates directory where we can save images."""
+        try:
+            plt.savefig("images/explanatory/{}/{}".format(
+                "n_{}_p_{}_s_{}".format(self.n, self.p, len(self.samples)),
+                image_name)
+            )
+        except FileNotFoundError:
+            mkdir_p("images/explanatory/{}".format(
+                "n_{}_p_{}_s_{}".format(self.n, self.p, len(self.samples))))
+            plt.savefig("images/explanatory/{}/{}".format(
+                "n_{}_p_{}_s_{}".format(self.n, self.p, len(self.samples)),
+                image_name)
+            )
+        return
 
     def log_posterior(self, beta):
         """Log posterior."""
@@ -93,12 +109,13 @@ class ExplanatoryVariables:
         fig.suptitle(r"MCMC Time series plots", fontsize=20)
         plt.tight_layout()
         fig.subplots_adjust(top=0.95)
+        self.save_image("mcmc_timeseries.png")
         plt.show()
 
     def mcmc_autocorr(self):
 
         fig, ax = plt.subplots(nrows=self.p, ncols=2,
-                               figsize=(15, 3 * self.p))
+                               figsize=(15, 3.5 * self.p))
         # Loop to do all auto-correlations
         for p in range(self.p):
             # Auto-correlation
@@ -113,13 +130,14 @@ class ExplanatoryVariables:
                           title=r'$\beta_{{{}}}$ Partial Autocorrelatio'
                                 r'n'.format(p + 1))
         plt.tight_layout()
+        self.save_image("mcmc_autocorr.png")
         plt.show()
 
     def mcmc_kde_on_hist(self):
         """Plots a histogram with KDE for each parameter, from a
         mcmc sample."""
         # Instantiate figure
-        fig, ax = plt.subplots(self.p, figsize=(10, 4 * self.p))
+        fig, ax = plt.subplots(self.p, figsize=(10, 4.5 * self.p))
         # store all kdes to return them and use them later
         kdes = []
         # Loop to do all the plots
@@ -132,6 +150,7 @@ class ExplanatoryVariables:
                        label=r'$p(\beta_{{{}}} \mid x)$'.format(p + 1))
             ax[p].plot(x_values, kde.evaluate(x_values), label='kde')
             ax[p].legend()
+        self.save_image("mcmc_hist.png")
         plt.show()
         # save them
         self.kdes = kdes
@@ -234,7 +253,7 @@ class ExplanatoryVariables:
                       loc='center')
             ax.set_xlabel(r'$\beta_1$')
             ax.set_ylabel(r'$\beta_2$')
-            plt.savefig("images/exploratory/surface_plots.png")
+            self.save_image("surface_plots.png")
             plt.show()
         else:
             print("Surface plot make sense only with 2 parameters.")
@@ -278,15 +297,14 @@ class ExplanatoryVariables:
             ax.set_title(r"KDE and Marginals for $\beta_{{{}}}$".format(p + 1))
         plt.tight_layout()
         fig.subplots_adjust(top=0.92)
-        plt.savefig("images/exploratory/marginal_plots.png")
+        self.save_image("marginal_plots.png")
         plt.show()
 
 
 if __name__ == "__main__":
-    # Settings
-    np.random.seed(1)
-    n = 100  # 1000
-    params = [1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    # Settings # try random seed 1
+    n = 500  # 1000
+    params = [1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
     X, y = generate_bernoulli(n, params)
     # Initialize model
     model = ExplanatoryVariables(
@@ -298,7 +316,7 @@ if __name__ == "__main__":
         sigma0=np.eye(len(params))  #4*n*np.linalg.inv(np.dot(X.T, X))
     )
     # time series of mcmc. 7 good for [1.0, 0.5], 0.94 good for 6 params.
-    mcmc_samples = model.sample(s=200000, b=1000, t=1, grg_scale=True)
+    mcmc_samples = model.sample(s=300000, b=1000, t=1, grg_scale=True)
     print("MH acceptance rate: {:.3}".format(model.ar))
     model.mcmc_timeseries()
     model.mcmc_autocorr()
