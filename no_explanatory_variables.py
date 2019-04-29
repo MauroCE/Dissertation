@@ -1,12 +1,13 @@
 from utility_functions import sigmoid, logit, log_normal_kernel, lambda_func,\
-    blue_cmap, oran_cmap
-from scipy.stats import norm
+    blue_cmap, oran_cmap, setup_plotting, metropolis
+from scipy.stats import norm, gaussian_kde
 from scipy.special import beta
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import matplotlib.cm as cm
-from matplotlib.colors import ListedColormap
+
+
+setup_plotting()
 
 
 class NoExplanatoryVariables:
@@ -34,6 +35,9 @@ class NoExplanatoryVariables:
         self.lap_sigma2 = 1.0 / (self.sum * (1.0 - self.ybar))
         # Variational mean and sigma squared
         self.var_mean, self.var_sigma2 = self._variational_em()
+        # mcmc samples and stuff
+        self.samples = np.array([])
+        self.ar = None  # Acceptance rate
 
     def true_posterior(self, t):
         """Transformation of beta distribution (not a beta anymore)"""
@@ -82,6 +86,27 @@ class NoExplanatoryVariables:
     def log_variational(self, t):
         """Log Variational distribution"""
         return log_normal_kernel(t, self.var_mean, self.var_sigma2)
+
+    def sample(self, s, b, t, a):
+        """RWM algorithm"""
+        samples, ar = metropolis(
+            p=self.true_log_posterior,
+            z0=np.array([self.true_log_mode]),
+            cov=1,
+            n_samples=s,
+            burn_in=b,
+            thinning=t,
+            a=a
+        )
+        self.samples = samples
+        self.ar = ar
+        print("MH acceptance rate: {:.3}".format(self.ar))
+        return self.samples
+
+    def mcmc_kde(self, t):
+        """Can be called evaluate kde found on histogram of mcmc samples."""
+        kde = gaussian_kde(self.samples.flatten())
+        return kde.pdf(t)
 
     def compare_approximations(self, n_min, n_max, n_step):
         """This function tries to compare Laplace approximation and
@@ -140,14 +165,11 @@ class NoExplanatoryVariables:
                                  var_scales[i] - lap_scales[i]))
         plt.tight_layout()
         plt.subplots_adjust(top=0.95)
-        plt.savefig("images/comparing_no_exp_approximations.png")
+        plt.savefig("images/no_explanatory/comparing_no_exp_approximations.png")
         plt.show()
 
 
 if __name__ == "__main__":
-    # pretty grid, random seed for consistency (?), # data points, create data
-    sns.set_style('darkgrid')
-    np.random.seed(1)
     n = 100
     theta = 1
     y = np.random.binomial(n=1, p=sigmoid(theta), size=n)
@@ -157,11 +179,15 @@ if __name__ == "__main__":
     x_log = np.linspace(-10, 10, 100)
     # Instantiate model with no explanatory variables
     model = NoExplanatoryVariables()
+    # Sample the model and get kde
+    samples = model.sample(100000, 500, 1, 2)
+    # Plot
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
     # Normal scale
     ax[0].plot(x, model.true_posterior(x), label='true posterior')
     ax[0].plot(x, model.laplace(x), label='laplace')
     ax[0].plot(x, model.variational(x), label='variational')
+    ax[0].plot(x, model.mcmc_kde(x), label='mcmc kde')
     ax[0].legend()
     ax[0].set_title('Posterior Scale')
     # Log scale
@@ -172,7 +198,7 @@ if __name__ == "__main__":
     ax[1].set_title('Log Posterior Scale')
     ax[1].axvline(model.true_log_mode, alpha=0.5, ls=':', label='log mode')
     ax[1].legend()
-    plt.savefig("images/no_explanatory.png")
+    plt.savefig("images/no_explanatory/no_explanatory.png")
     plt.show()
     # Compare mean and scale of Laplace and Variational normal approximations
     model.compare_approximations(1000, 10000, 1000)
