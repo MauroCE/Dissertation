@@ -146,8 +146,7 @@ def round_matrix_to_symmetry(x, max_digits=7):
     return x.round(q_max), q_max
 
 
-def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1,
-               a=1):
+def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
     """
     Random-Walk Metropolis algorithm for a multivariate probability density.
 
@@ -178,11 +177,13 @@ def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1,
     # Init list storing all samples. Generate random numbers.
     sample_list = np.zeros((tot, n_params))
     logu = np.log(np.random.uniform(size=tot))
+    # Optimal scale
+    a = 2.38**2 / n_params
     if n_params >= 2:
         normal_shift = multivariate_normal.rvs(mean=np.zeros(n_params),
                                                cov=a*cov, size=tot)
     else:
-        normal_shift = norm.rvs(loc=0, scale=np.sqrt(cov), size=tot)
+        normal_shift = norm.rvs(loc=0, scale=np.sqrt(a), size=tot)
     for i in range(tot):
         # Sample a candidate from Normal(mu, sigma)
         cand = z + normal_shift[i]
