@@ -165,8 +165,6 @@ def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
     :param thinning: If `thinning` > 1 then after applying burn_in we get
                      every <<thinning>> samples.
     :type thinning: int
-    :param a: Coefficient used to multiply vcov.
-    :type a: float
     :return: `n_samples` samples from `p`.
     :rtype: np.array
     """
