@@ -69,7 +69,7 @@ class ExplanatoryVariables:
             np.log(1 + np.exp(np.dot(self.X, beta))).sum() + \
             log_normal_kernel(beta, self.mu0, self.sigma0, multivariate=True)
 
-    def sample(self, s, b=0, t=1, a=1, grg_scale=False):
+    def sample(self, s, b=0, t=1):
         """
         Samples the log-posterior distribution using Random-Walk Metropolis
         Hastings. glg_scale is the Gelman, Roberts, Gilks scale.
@@ -82,16 +82,13 @@ class ExplanatoryVariables:
         """
         # See http://people.ee.duke.edu/~lcarin/baystat5.pdf
         # or https://stats.stackexchange.com/a/259226/146552
-        if grg_scale:
-            a = 2.38**2.0 / self.p
         samples, ar = metropolis(
             p=self.log_posterior,
             z0=self.mode,
             cov=self.hess_inv,  # negative inverse second derivative
             n_samples=s,
             burn_in=b,
-            thinning=t,
-            a=a
+            thinning=t
         )
         self.samples = samples
         self.ar = ar
@@ -147,8 +144,9 @@ class ExplanatoryVariables:
             x_values = np.linspace(min(self.samples[:, p]),
                                    max(self.samples[:, p]), 200)
             ax[p].hist(self.samples[:, p], bins=500, density=True,
-                       label=r'$p(\beta_{{{}}} \mid x)$'.format(p + 1))
+                       label='rwmh samples'.format(p + 1))
             ax[p].plot(x_values, kde.evaluate(x_values), label='kde')
+            ax[p].set_xlabel(r'$\beta_{{{}}}$'.format(p + 1))
             ax[p].legend()
         self.save_image("mcmc_hist.png")
         plt.show()
@@ -223,7 +221,7 @@ class ExplanatoryVariables:
             zp = zp - np.max(zp)
             # Put plot together
             fig = plt.figure()
-            fig.suptitle("Contour and Surface plot of Laplace and Variational")
+            #fig.suptitle("Contour and Surface plot of Laplace and Variational")
             ax = fig.add_subplot(121, projection='3d')
             # Legend needs some manual modifications
             p = ax.plot_surface(xp, yp, zp, label='log-posterior')
@@ -274,8 +272,7 @@ class ExplanatoryVariables:
         # Plot
         fig, axes = generate_subplots(
             self.p, row_wise=True,
-            suptitle="Dataset size: {}, Number of "
-                     "Parameters: {}".format(self.n, self.p), fontsize=20)
+            suptitle=None, fontsize=20)
         for p, ax in zip(np.arange(self.p), axes):
             # obtain all marginals / kdes needed
             laplace, variational, mcmc = laplace_marginals[p], var_marginals[
@@ -303,8 +300,9 @@ class ExplanatoryVariables:
 
 if __name__ == "__main__":
     # Settings # try random seed 1
-    n = 500  # 1000
-    params = [1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    np.random.seed(2)
+    n = 1000  # 1000
+    params = [1.0, 0.5]  #[1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
     X, y = generate_bernoulli(n, params)
     # Initialize model
     model = ExplanatoryVariables(
@@ -313,10 +311,10 @@ if __name__ == "__main__":
         x_matrix=X,
         y_vector=y,
         mu0=np.zeros(len(params)),
-        sigma0=np.eye(len(params))  #4*n*np.linalg.inv(np.dot(X.T, X))
+        sigma0=np.eye(len(params))
     )
     # time series of mcmc. 7 good for [1.0, 0.5], 0.94 good for 6 params.
-    mcmc_samples = model.sample(s=300000, b=1000, t=1, grg_scale=True)
+    mcmc_samples = model.sample(s=200000, b=1000, t=1)
     print("MH acceptance rate: {:.3}".format(model.ar))
     model.mcmc_timeseries()
     model.mcmc_autocorr()

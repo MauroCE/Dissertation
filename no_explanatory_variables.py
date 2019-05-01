@@ -87,7 +87,7 @@ class NoExplanatoryVariables:
         """Log Variational distribution"""
         return log_normal_kernel(t, self.var_mean, self.var_sigma2)
 
-    def sample(self, s, b, t, a):
+    def sample(self, s, b, t):
         """RWM algorithm"""
         samples, ar = metropolis(
             p=self.true_log_posterior,
@@ -95,8 +95,7 @@ class NoExplanatoryVariables:
             cov=1,
             n_samples=s,
             burn_in=b,
-            thinning=t,
-            a=a
+            thinning=t
         )
         self.samples = samples
         self.ar = ar
@@ -180,7 +179,7 @@ if __name__ == "__main__":
     # Instantiate model with no explanatory variables
     model = NoExplanatoryVariables()
     # Sample the model and get kde
-    samples = model.sample(100000, 500, 1, 2)
+    samples = model.sample(100000, 500, 1)
     # Plot
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
     # Normal scale
