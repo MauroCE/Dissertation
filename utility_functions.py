@@ -152,7 +152,7 @@ def round_matrix_to_symmetry(x, max_digits=7):
     return x.round(q_max), q_max
 
 
-def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
+def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1, scale=1.0):
     """
     Random-Walk Metropolis algorithm for a multivariate probability density.
 
@@ -171,6 +171,10 @@ def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
     :param thinning: If `thinning` > 1 then after applying burn_in we get
                      every <<thinning>> samples.
     :type thinning: int
+    :param scale: Extra parameter that can be used to scale the standard
+                  deviation that is found with grg rule. This can be useful
+                  when grg rule does not yield great results.
+    :type scale: float
     :return: `n_samples` samples from `p`.
     :rtype: np.array
     """
@@ -182,12 +186,12 @@ def metropolis(p, z0, cov, n_samples=100, burn_in=0, thinning=1):
     sample_list = np.zeros((tot, n_params))
     logu = np.log(np.random.uniform(size=tot))
     # Optimal scale
-    a = 2.38**2 / n_params
+    a = (2.38**2 / n_params)*scale
     if n_params >= 2:
         normal_shift = multivariate_normal.rvs(mean=np.zeros(n_params),
                                                cov=a*cov, size=tot)
     else:
-        normal_shift = norm.rvs(loc=0, scale=np.sqrt(a), size=tot)
+        normal_shift = norm.rvs(loc=0, scale=np.sqrt(a*cov), size=tot)
     for i in range(tot):
         # Sample a candidate from Normal(mu, sigma)
         cand = z + normal_shift[i]

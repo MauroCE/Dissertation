@@ -19,7 +19,9 @@ class NoExplanatoryVariables:
     random variables. By taking the log we get the true log posterior
     distribution.
     """
-    def __init__(self, save=True):
+    def __init__(self, save=True, seed=1):
+        # save seed number for saving
+        self.seed = seed
         self.n = n
         # Mean of observations
         self.ybar = ybar
@@ -39,19 +41,33 @@ class NoExplanatoryVariables:
         self.ar = None  # Acceptance rate
         # Whether to save images or not
         self.save = save
+        # scale factor
+        self.mcmc_scale_factor = None
+        # kde
+        self.kde = None
+        self.kde_scale = None
 
     def save_image(self, image_name):
         """Creates directory where we can save images."""
+        # create dir name. If kde_scale is given save based on that
+        dir_name = "n_{}_s_{}_sd_{}_sc_{:.2}".format(
+            self.n,
+            len(self.samples),
+            self.seed,
+            self.mcmc_scale_factor
+        )
+        if self.kde_scale is not None:
+            dir_name += "_k_{}".format(self.kde_scale)
+        # Try to save, but might need to create directory first
         try:
             plt.savefig("images/no_explanatory/{}/{}".format(
-                "n_{}_s_{}".format(self.n, len(self.samples)),
+                dir_name,
                 image_name)
             )
         except FileNotFoundError:
-            mkdir_p("images/no_explanatory/{}".format(
-                "n_{}_s_{}".format(self.n, len(self.samples))))
+            mkdir_p("images/no_explanatory/{}".format(dir_name))
             plt.savefig("images/no_explanatory/{}/{}".format(
-                "n_{}_s_{}".format(self.n, len(self.samples)),
+                dir_name,
                 image_name)
             )
         return
@@ -62,7 +78,8 @@ class NoExplanatoryVariables:
 
     def true_log_posterior(self, t):
         """Log of the true posterior"""
-        return t*self.a - (self.n + 2)*np.log(1 + np.exp(t))
+        return -np.log(beta(self.a, self.b)) \
+            + t*self.a - self.n*np.log(1 + np.exp(t))
 
     def log_likelihood(self, t):
         """log likelihood written in terms of theta. Corresponds to log
@@ -104,25 +121,32 @@ class NoExplanatoryVariables:
         """Log Variational distribution"""
         return log_normal_kernel(t, self.var_mean, self.var_sigma2)
 
-    def sample(self, s, b, t):
+    def sample(self, s, b, t, scale=1.0, kde_scale=None):
         """RWM algorithm"""
+        # save scale for plotting
+        self.mcmc_scale_factor = scale
         samples, ar = metropolis(
             p=self.true_log_posterior,
             z0=np.array([self.true_log_mode]),
             cov=1,
             n_samples=s,
             burn_in=b,
-            thinning=t
+            thinning=t,
+            scale=scale
         )
         self.samples = samples
         self.ar = ar
+        # find also KDE
+        self.kde = gaussian_kde(self.samples.flatten())
+        if kde_scale is not None:
+            self.kde_scale = kde_scale
+            self.kde.set_bandwidth(bw_method=kde_scale)
         print("MH acceptance rate: {:.3}".format(self.ar))
         return self.samples
 
     def mcmc_kde(self, t):
         """Can be called evaluate kde found on histogram of mcmc samples."""
-        kde = gaussian_kde(self.samples.flatten())
-        return kde.pdf(t)
+        return self.kde.pdf(t)
 
     def compare_approximations(self, n_min, n_max, n_step):
         """This function tries to compare Laplace approximation and
@@ -190,7 +214,7 @@ class NoExplanatoryVariables:
 
 
 if __name__ == "__main__":
-    n = 100
+    n = 100  # 100
     theta = 1
     y = np.random.binomial(n=1, p=sigmoid(theta), size=n)
     ybar = np.mean(y)
@@ -198,9 +222,9 @@ if __name__ == "__main__":
     x = np.linspace(0, 2, 100)
     x_log = np.linspace(-10, 10, 100)
     # Instantiate model with no explanatory variables
-    model = NoExplanatoryVariables()
+    model = NoExplanatoryVariables(save=True, seed=2)
     # Sample the model and get kde
-    samples = model.sample(100000, 500, 1)
+    samples = model.sample(s=100000, b=500, t=1, scale=0.25, kde_scale=0.15)
     # Plot
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
     # Normal scale
@@ -212,7 +236,7 @@ if __name__ == "__main__":
     ax[0].set_title('Posterior Scale')
     # Log scale
     ax[1].plot(x_log, model.true_log_posterior(x_log), label='true log post')
-    ax[1].plot(x_log, model.log_likelihood(x_log), label='log likelihood')
+    # ax[1].plot(x_log, model.log_likelihood(x_log), label='log likelihood')
     ax[1].plot(x_log, model.log_laplace(x_log), label='log laplace')
     ax[1].plot(x_log, model.log_variational(x_log), label='log variational')
     ax[1].set_title('Log Posterior Scale')
