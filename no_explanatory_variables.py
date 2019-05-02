@@ -1,10 +1,9 @@
 from utility_functions import sigmoid, logit, log_normal_kernel, lambda_func,\
-    blue_cmap, oran_cmap, setup_plotting, metropolis
+    blue_cmap, oran_cmap, setup_plotting, metropolis, mkdir_p
 from scipy.stats import norm, gaussian_kde
 from scipy.special import beta
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 setup_plotting()
@@ -20,15 +19,15 @@ class NoExplanatoryVariables:
     random variables. By taking the log we get the true log posterior
     distribution.
     """
-    def __init__(self):
+    def __init__(self, save=True):
         self.n = n
         # Mean of observations
         self.ybar = ybar
         # Sum of observations
         self.sum = self.n*self.ybar
         # Parameters for beta distribution.
-        self.a = self.sum + 1
-        self.b = self.n - self.sum + 1
+        self.a = self.sum
+        self.b = self.n - self.sum
         self.true_log_mode = self.a / (self.a + self.b)  # found by derivative
         # Laplace mean and sigma squared
         self.lap_mean = logit(self.ybar)
@@ -38,6 +37,24 @@ class NoExplanatoryVariables:
         # mcmc samples and stuff
         self.samples = np.array([])
         self.ar = None  # Acceptance rate
+        # Whether to save images or not
+        self.save = save
+
+    def save_image(self, image_name):
+        """Creates directory where we can save images."""
+        try:
+            plt.savefig("images/no_explanatory/{}/{}".format(
+                "n_{}_s_{}".format(self.n, len(self.samples)),
+                image_name)
+            )
+        except FileNotFoundError:
+            mkdir_p("images/no_explanatory/{}".format(
+                "n_{}_s_{}".format(self.n, len(self.samples))))
+            plt.savefig("images/explanatory/{}/{}".format(
+                "n_{}_s_{}".format(self.n, len(self.samples)),
+                image_name)
+            )
+        return
 
     def true_posterior(self, t):
         """Transformation of beta distribution (not a beta anymore)"""
@@ -164,7 +181,8 @@ class NoExplanatoryVariables:
                                  var_scales[i] - lap_scales[i]))
         plt.tight_layout()
         plt.subplots_adjust(top=0.95)
-        plt.savefig("images/no_explanatory/comparing_no_exp_approximations.png")
+        if self.save:
+            self.save_image("mean_sd_comparison.png")
         plt.show()
 
 
@@ -197,7 +215,8 @@ if __name__ == "__main__":
     ax[1].set_title('Log Posterior Scale')
     ax[1].axvline(model.true_log_mode, alpha=0.5, ls=':', label='log mode')
     ax[1].legend()
-    plt.savefig("images/no_explanatory/no_explanatory.png")
+    if model.save:
+        model.save_image("posterior_laplace_variational.png")
     plt.show()
     # Compare mean and scale of Laplace and Variational normal approximations
     model.compare_approximations(1000, 10000, 1000)
