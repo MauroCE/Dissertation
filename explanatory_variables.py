@@ -5,7 +5,8 @@ from scipy.optimize import minimize
 from scipy.stats import gaussian_kde, multivariate_normal, norm
 from utility_functions import generate_bernoulli, \
     log_normal_kernel, metropolis, sigmoid, lambda_func, \
-    row_outer, prepare_surface_plot, generate_subplots, setup_plotting, mkdir_p
+    row_outer, prepare_surface_plot, generate_subplots, setup_plotting, \
+    mkdir_p, generate_parameters
 
 
 setup_plotting()
@@ -300,9 +301,9 @@ class ExplanatoryVariables:
 
 if __name__ == "__main__":
     # Settings # try random seed 1
-    np.random.seed(2)
-    n = 1000  # 1000
-    params = [1.0, 0.5]  #[1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    #np.random.seed(2)
+    n = 20  # 1000
+    params = generate_parameters(20)
     X, y = generate_bernoulli(n, params)
     # Initialize model
     model = ExplanatoryVariables(
