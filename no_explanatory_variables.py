@@ -134,6 +134,8 @@ class NoExplanatoryVariables:
         lap_means = []
         lap_scales = []
         n_list = list(range(n_min, n_max, n_step))
+        # store previous n to save figure properly
+        n_old = self.n
         for n in n_list:
             self.n = n
             self.ybar = np.mean(
@@ -182,6 +184,7 @@ class NoExplanatoryVariables:
         plt.tight_layout()
         plt.subplots_adjust(top=0.95)
         if self.save:
+            self.n = n_old
             self.save_image("mean_sd_comparison.png")
         plt.show()
 
