@@ -50,7 +50,7 @@ class NoExplanatoryVariables:
         except FileNotFoundError:
             mkdir_p("images/no_explanatory/{}".format(
                 "n_{}_s_{}".format(self.n, len(self.samples))))
-            plt.savefig("images/explanatory/{}/{}".format(
+            plt.savefig("images/no_explanatory/{}/{}".format(
                 "n_{}_s_{}".format(self.n, len(self.samples)),
                 image_name)
             )
