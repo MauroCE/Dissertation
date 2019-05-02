@@ -37,6 +37,12 @@ def mkdir_p(path):
             raise
 
 
+def generate_parameters(p):
+    """Simple utility function to generate a list of the form
+    [1.0, 0.5, ... , 0.5] with length p."""
+    return np.insert(np.repeat(0.5, p-1), 0, 1.0)
+
+
 def sigmoid(x):
     """
     Sigmoid function that can handle arrays. For a thorough discussion on
