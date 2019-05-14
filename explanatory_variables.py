@@ -290,6 +290,7 @@ class ExplanatoryVariables:
             ax.plot(x_values, laplace.pdf(x_values), label='laplace marginal')
             ax.plot(x_values, variational.pdf(x_values),
                     label='variational marginal')
+            ax.axvline(self.params[p], alpha=0.4, ls='--', label="True " + r'$\beta_{{{}}}$'.format(p + 1), color='k')
             ax.set_xlabel(r'$\beta_{{{}}}$'.format(p + 1))
             ax.legend()
             ax.set_title(r"KDE and Marginals for $\beta_{{{}}}$".format(p + 1))
@@ -302,8 +303,8 @@ class ExplanatoryVariables:
 if __name__ == "__main__":
     # Settings # try random seed 1
     #np.random.seed(2)
-    n = 20  # 1000
-    params = generate_parameters(20)
+    n = 100  # 1000
+    params = generate_parameters(4)
     X, y = generate_bernoulli(n, params)
     # Initialize model
     model = ExplanatoryVariables(

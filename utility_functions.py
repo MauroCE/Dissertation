@@ -23,6 +23,7 @@ def setup_plotting():
     plt.rcParams['font.family'] = 'STIXGeneral'
     plt.rcParams['font.size'] = 14
     plt.rcParams['figure.figsize'] = (12, 6)
+    plt.rc("savefig", dpi=300)
     plt.rc('figure', titlesize=16)
 
 
