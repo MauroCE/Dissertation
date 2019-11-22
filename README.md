@@ -14,6 +14,5 @@ their extensions_" and by the subsequent analysis done by Bishop (2006) in his
 *  "_MCMC in Practice_" by David Spiegelhalter, Sylvia Richardson, and 
 W. R. Gilks and many other good MCMC textbooks.
 
-To see the most up-to-date version of my dissertation, you can click 
-[here](https://www.overleaf.com/project/5c50a2a1584d9620ef2e6c02/output/output.pdf?compileGroup=standard&clsiserverid=clsi-pre-emp-r00h&popupDownload=true)
-and it will download the latest version of the PDF file.
+To see the most up-to-date version of my dissertation, you can navigate to 
+[here](Dissertation.pdf).
